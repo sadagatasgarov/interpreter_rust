@@ -34,6 +34,12 @@ pub enum TokenKind {
 
     Function,
     Let,
+    If,
+    Else,
+    Return,
+    True,
+    False
+
 }
 
 impl Display for TokenKind {
@@ -59,6 +65,11 @@ impl Display for TokenKind {
             TokenKind::Slash => write!(f, "/"),
             TokenKind::Lt => write!(f, "<"),
             TokenKind::Gt => write!(f, ">"),
+            TokenKind::If => write!(f, "If"),
+            TokenKind::Else => write!(f, "Else"),
+            TokenKind::Return => write!(f, "Return"),
+            TokenKind::True =>write!(f, "True"),
+            TokenKind::False =>write!(f, "False"),
         }
     }
 }
@@ -69,6 +80,11 @@ pub fn lookup_ident(identifier: &String) -> TokenKind {
     match identifier.as_str() {
         "fn" => TokenKind::Function,
         "let" => TokenKind::Let,
+        "if" => TokenKind::If,
+        "else" => TokenKind::Else,
+        "return" => TokenKind::Return,
+        "true" => TokenKind::True,
+        "false" => TokenKind::False,
         _ => TokenKind::Ident 
     }
 }
