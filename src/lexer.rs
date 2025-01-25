@@ -69,19 +69,90 @@ mod test {
 
     #[test]
     fn test_next_token() {
-        let input = "=+(){},;";
+        let input = r#"
+        let five = 5;
+        let ten = 10;
+
+        let add= fn(x, y) {
+            x+y;
+        };
+
+        let result = add(five, ten);
+        "#;
         let expected: Vec<Token> = vec![
+            Token {
+                kind: TokenKind::Let,
+                literal: "let".to_string(),
+            },
+            Token {
+                kind: TokenKind::Ident,
+                literal: "five".to_string(),
+            },
             Token {
                 kind: TokenKind::Assign,
                 literal: "=".to_string(),
             },
             Token {
-                kind: TokenKind::Plus,
-                literal: "+".to_string(),
+                kind: TokenKind::Int,
+                literal: "5".to_string(),
+            },
+            Token {
+                kind: TokenKind::Semicolon,
+                literal: ";".to_string(),
+            },
+
+            Token {
+                kind: TokenKind::Let,
+                literal: "let".to_string(),
+            },
+            Token {
+                kind: TokenKind::Ident,
+                literal: "ten".to_string(),
+            },
+            Token {
+                kind: TokenKind::Assign,
+                literal: "=".to_string(),
+            },
+            Token {
+                kind: TokenKind::Int,
+                literal: "10".to_string(),
+            },
+            Token {
+                kind: TokenKind::Semicolon,
+                literal: ";".to_string(),
+            },
+
+            Token {
+                kind: TokenKind::Let,
+                literal: "let".to_string(),
+            },
+            Token {
+                kind: TokenKind::Ident,
+                literal: "add".to_string(),
+            },
+            Token {
+                kind: TokenKind::Assign,
+                literal: "=".to_string(),
+            },
+            Token {
+                kind: TokenKind::Function,
+                literal: "fn".to_string(),
             },
             Token {
                 kind: TokenKind::Lparen,
                 literal: "(".to_string(),
+            },
+            Token {
+                kind: TokenKind::Semicolon,
+                literal: ";".to_string(),
+            },
+            Token {
+                kind: TokenKind::Comma,
+                literal: ",".to_string(),
+            },
+            Token {
+                kind: TokenKind::Ident,
+                literal: "y".to_string(),
             },
             Token {
                 kind: TokenKind::Rparen,
@@ -92,12 +163,62 @@ mod test {
                 literal: "{".to_string(),
             },
             Token {
+                kind: TokenKind::Ident,
+                literal: "x".to_string(),
+            },
+            Token {
+                kind: TokenKind::Plus,
+                literal: "+".to_string(),
+            },
+            Token {
+                kind: TokenKind::Ident,
+                literal: "y".to_string(),
+            },
+            Token {
                 kind: TokenKind::Rbrace,
                 literal: "}".to_string(),
             },
             Token {
+                kind: TokenKind::Semicolon,
+                literal: ";".to_string(),
+            },
+
+
+            Token {
+                kind: TokenKind::Let,
+                literal: "let".to_string(),
+            },
+            Token {
+                kind: TokenKind::Ident,
+                literal: "result".to_string(),
+            },
+            Token {
+                kind: TokenKind::Assign,
+                literal: "=".to_string(),
+            },
+            Token {
+                kind: TokenKind::Ident,
+                literal: "add".to_string(),
+            },
+            Token {
+                kind: TokenKind::Lparen,
+                literal: "(".to_string(),
+            },            
+            Token {
+                kind: TokenKind::Ident,
+                literal: "five".to_string(),
+            },            
+            Token {
                 kind: TokenKind::Comma,
                 literal: ",".to_string(),
+            },            
+            Token {
+                kind: TokenKind::Ident,
+                literal: "ten".to_string(),
+            },            
+            Token {
+                kind: TokenKind::Rparen,
+                literal: ")".to_string(),
             },
             Token {
                 kind: TokenKind::Semicolon,
@@ -107,6 +228,10 @@ mod test {
                 kind: TokenKind::Eof,
                 literal: "".to_string(),
             },
+
+
+
+
         ];
 
         let mut lexer = Lexer::new(input);
