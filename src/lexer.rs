@@ -35,7 +35,7 @@ impl Lexer {
     }
 
 
-    fn next_token(&self) -> Token {
+    fn next_token(&mut self) -> Token {
         let token = match self.ch {
             '=' => Lexer::new_token(TokenKind::Assign, self.ch),
             ';' => Lexer::new_token(TokenKind::Semicolon, self.ch),
@@ -48,6 +48,8 @@ impl Lexer {
             '\0' => Token {kind: TokenKind::Eof, literal: "".to_string()},
             _ => Lexer::new_token(TokenKind::Illegal, self.ch),
         };
+
+        self.read_char();
 
         return token;
     }
