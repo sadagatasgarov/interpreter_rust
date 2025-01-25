@@ -348,7 +348,7 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-
+//
             Token {
                 kind: TokenKind::If,
                 literal: "if".to_string(),
@@ -422,11 +422,6 @@ mod test {
                 kind: TokenKind::Rbrace,
                 literal: "}".to_string(),
             },
-// 
-            // Token {
-            //     kind: TokenKind::Semicolon,
-            //     literal: ";".to_string(),
-            // },
 
 //
             Token {
