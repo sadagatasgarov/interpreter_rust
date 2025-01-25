@@ -16,6 +16,13 @@ pub enum TokenKind {
 
     Assign,
     Plus,
+    Minus,
+    Bang,
+    Asteriks,
+    Slash,
+
+    Lt,
+    Gt,
 
     Comma,
     Semicolon,
@@ -46,6 +53,12 @@ impl Display for TokenKind {
             TokenKind::Rbrace => write!(f, "Rbrace"),
             TokenKind::Function => write!(f, "Function"),
             TokenKind::Let => write!(f, "Let"),
+            TokenKind::Minus => write!(f, "-"),
+            TokenKind::Bang => write!(f, "!"),
+            TokenKind::Asteriks => write!(f, "*"),
+            TokenKind::Slash => write!(f, "/"),
+            TokenKind::Lt => write!(f, "<"),
+            TokenKind::Gt => write!(f, ">"),
         }
     }
 }
