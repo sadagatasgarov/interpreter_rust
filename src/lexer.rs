@@ -109,7 +109,7 @@ mod test {
             },
         ];
 
-        let lexer = Lexer::new(input);
+        let mut lexer = Lexer::new(input);
 
         for (idx, exp_token) in expected.into_iter().enumerate() {
             let recv_token = lexer.next_token();
