@@ -343,7 +343,6 @@ mod test {
                 literal: ";".to_string(),
             },
 
-
 //
             Token {
                 kind: TokenKind::Eof,
