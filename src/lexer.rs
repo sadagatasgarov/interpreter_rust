@@ -1,4 +1,4 @@
-use crate::token::Token;
+use crate::token::{Token, TokenKind};
 
 struct Lexer {
     input: Vec<char>,
@@ -35,9 +35,28 @@ impl Lexer {
     }
 
 
-    pub fn next_token(&self) -> Token {
-        todo!()
+    fn next_token(&self) -> Token {
+        let token = match self.ch {
+            '=' => Lexer::new_token(TokenKind::Assign, self.ch),
+            ';' => Lexer::new_token(TokenKind::Semicolon, self.ch),
+            '(' => Lexer::new_token(TokenKind::Lparen, self.ch),
+            ')' => Lexer::new_token(TokenKind::Rparen, self.ch),
+            ',' => Lexer::new_token(TokenKind::Comma, self.ch),
+            '+' => Lexer::new_token(TokenKind::Plus, self.ch),
+            '{' => Lexer::new_token(TokenKind::Lbrace, self.ch),
+            '}' => Lexer::new_token(TokenKind::Rbrace, self.ch),
+            '\0' => Token {kind: TokenKind::Eof, literal: "".to_string()},
+            _ => Lexer::new_token(TokenKind::Illegal, self.ch),
+        };
+
+        return token;
     }
+
+    fn new_token(kind: TokenKind, ch: char) -> Token {
+        Token {kind, literal: ch.to_string()}
+    }
+
+
 }
 
 #[cfg(test)]
