@@ -24,6 +24,9 @@ pub enum TokenKind {
     Lt,
     Gt,
 
+    Eq,
+    NotEq,
+
     Comma,
     Semicolon,
 
@@ -70,6 +73,8 @@ impl Display for TokenKind {
             TokenKind::Return => write!(f, "Return"),
             TokenKind::True =>write!(f, "True"),
             TokenKind::False =>write!(f, "False"),
+            TokenKind::Eq => write!(f, "=="),
+            TokenKind::NotEq => write!(f, "!="),
         }
     }
 }

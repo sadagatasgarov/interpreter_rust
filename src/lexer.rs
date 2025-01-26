@@ -7,16 +7,13 @@ struct Lexer {
     ch: char,
 }
 
-
-
-
 impl Lexer {
     pub fn new(input: &str) -> Lexer {
-        let mut lexer = Lexer{
+        let mut lexer = Lexer {
             input: input.chars().collect(),
-            position:0,
+            position: 0,
             read_position: 0,
-            ch: Default::default()
+            ch: Default::default(),
         };
 
         lexer.read_char();
@@ -34,12 +31,21 @@ impl Lexer {
         self.read_position += 1;
     }
 
-
     fn next_token(&mut self) -> Token {
         self.skip_whitespace();
-        
+
         let token = match self.ch {
-            '=' => Lexer::new_token(TokenKind::Assign, self.ch),
+            '=' => {
+                if self.peek_char() == '=' {
+                    self.read_char();
+                    Token{
+                        kind: TokenKind::Eq,
+                        literal: String::from("==")
+                    }
+                } else {
+                    Lexer::new_token(TokenKind::Assign, self.ch)
+                }
+            }
             ';' => Lexer::new_token(TokenKind::Semicolon, self.ch),
             '(' => Lexer::new_token(TokenKind::Lparen, self.ch),
             ')' => Lexer::new_token(TokenKind::Rparen, self.ch),
@@ -47,9 +53,23 @@ impl Lexer {
             '+' => Lexer::new_token(TokenKind::Plus, self.ch),
             '{' => Lexer::new_token(TokenKind::Lbrace, self.ch),
             '}' => Lexer::new_token(TokenKind::Rbrace, self.ch),
-            '\0' => Token {kind: TokenKind::Eof, literal: "".to_string()},
+            '\0' => Token {
+                kind: TokenKind::Eof,
+                literal: "".to_string(),
+            },
             '-' => Lexer::new_token(TokenKind::Minus, self.ch),
-            '!' => Lexer::new_token(TokenKind::Bang, self.ch),
+            '!' => {
+                if self.peek_char() == '=' {
+                    self.read_char();
+                    Token{
+                        kind: TokenKind::NotEq,
+                        literal: String::from("!=")
+                    }
+                } else {
+                Lexer::new_token(TokenKind::Bang, self.ch)
+                }
+            }
+
             '/' => Lexer::new_token(TokenKind::Slash, self.ch),
             '*' => Lexer::new_token(TokenKind::Asteriks, self.ch),
             '<' => Lexer::new_token(TokenKind::Lt, self.ch),
@@ -59,14 +79,14 @@ impl Lexer {
                 return if Lexer::is_letter(self.ch) {
                     let literal = self.read_identifier();
                     let kind = lookup_ident(&literal);
-                    Token{kind, literal}
-                } else if Lexer::is_digit(self.ch){
+                    Token { kind, literal }
+                } else if Lexer::is_digit(self.ch) {
                     let kind = TokenKind::Int;
                     let literal = self.read_number();
-                    Token{kind, literal}
+                    Token { kind, literal }
                 } else {
-                    Lexer::new_token(TokenKind::Illegal, self.ch)    
-                }  
+                    Lexer::new_token(TokenKind::Illegal, self.ch)
+                }
             }
         };
 
@@ -75,10 +95,29 @@ impl Lexer {
         return token;
     }
 
-    fn new_token(kind: TokenKind, ch: char) -> Token {
-        Token {kind, literal: ch.to_string()}
+
+
+    fn skip_whitespace(&mut self) {
+        while self.ch.is_ascii_whitespace() {
+            self.read_char();
+        }
     }
-    
+
+    fn peek_char(&self) -> char {
+        return if self.read_position >= self.input.len() {
+            '\0'
+        } else {
+            self.input[self.read_position]
+        }
+    }
+
+    fn new_token(kind: TokenKind, ch: char) -> Token {
+        Token {
+            kind,
+            literal: ch.to_string(),
+        }
+    }
+
     fn is_letter(ch: char) -> bool {
         ch.is_alphabetic() || ch == '_'
     }
@@ -93,17 +132,13 @@ impl Lexer {
 
         identifier
     }
-    
-    fn skip_whitespace(&mut self) {
-        while self.ch.is_ascii_whitespace() {
-            self.read_char();
-        }
-    }
-    
+
+
+
     fn is_digit(ch: char) -> bool {
         ch.is_numeric()
     }
-    
+
     fn read_number(&mut self) -> String {
         let mut num = String::from("");
         while Lexer::is_digit(self.ch) {
@@ -112,12 +147,7 @@ impl Lexer {
         }
         num
     }
-
-    
-
-
 }
-
 
 #[cfg(test)]
 mod test {
@@ -146,11 +176,13 @@ mod test {
             return false;
         }
 
+        10 == 10;
+        10 !=9;
         "#;
 
-        // == != <> 
+        // == != <>
         let expected: Vec<Token> = vec![
-//
+            //
             Token {
                 kind: TokenKind::Let,
                 literal: "let".to_string(),
@@ -171,7 +203,7 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-//
+            //
             Token {
                 kind: TokenKind::Let,
                 literal: "let".to_string(),
@@ -192,7 +224,7 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-//
+            //
             Token {
                 kind: TokenKind::Let,
                 literal: "let".to_string(),
@@ -257,7 +289,7 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-//
+            //
             Token {
                 kind: TokenKind::Let,
                 literal: "let".to_string(),
@@ -277,19 +309,19 @@ mod test {
             Token {
                 kind: TokenKind::Lparen,
                 literal: "(".to_string(),
-            },            
+            },
             Token {
                 kind: TokenKind::Ident,
                 literal: "five".to_string(),
-            },            
+            },
             Token {
                 kind: TokenKind::Comma,
                 literal: ",".to_string(),
-            },            
+            },
             Token {
                 kind: TokenKind::Ident,
                 literal: "ten".to_string(),
-            },            
+            },
             Token {
                 kind: TokenKind::Rparen,
                 literal: ")".to_string(),
@@ -298,7 +330,7 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-//
+            //
             Token {
                 kind: TokenKind::Bang,
                 literal: "!".to_string(),
@@ -323,7 +355,7 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-//
+            //
             Token {
                 kind: TokenKind::Int,
                 literal: "5".to_string(),
@@ -348,7 +380,7 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-//
+            //
             Token {
                 kind: TokenKind::If,
                 literal: "if".to_string(),
@@ -385,7 +417,6 @@ mod test {
                 kind: TokenKind::True,
                 literal: "true".to_string(),
             },
-
             Token {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
@@ -394,17 +425,14 @@ mod test {
                 kind: TokenKind::Rbrace,
                 literal: "}".to_string(),
             },
-
             Token {
                 kind: TokenKind::Else,
                 literal: "else".to_string(),
             },
-
             Token {
                 kind: TokenKind::Lbrace,
                 literal: "{".to_string(),
             },
-
             Token {
                 kind: TokenKind::Return,
                 literal: "return".to_string(),
@@ -417,18 +445,50 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-
             Token {
                 kind: TokenKind::Rbrace,
                 literal: "}".to_string(),
             },
-
 //
+            Token {
+                kind: TokenKind::Int,
+                literal: "10".to_string(),
+            },            
+            Token {
+                kind: TokenKind::Eq,
+                literal: "==".to_string(),
+            },    
+            Token {
+                kind: TokenKind::Int,
+                literal: "10".to_string(),
+            },
+            Token {
+                kind: TokenKind::Semicolon,
+                literal: ";".to_string(),
+            },
+
+            Token {
+                kind: TokenKind::Int,
+                literal: "10".to_string(),
+            },            
+            Token {
+                kind: TokenKind::NotEq,
+                literal: "!=".to_string(),
+            },            
+            Token {
+                kind: TokenKind::Int,
+                literal: "9".to_string(),
+            },
+            Token {
+                kind: TokenKind::Semicolon,
+                literal: ";".to_string(),
+            },
+
+            //
             Token {
                 kind: TokenKind::Eof,
                 literal: "".to_string(),
             },
-
         ];
 
         let mut lexer = Lexer::new(input);
