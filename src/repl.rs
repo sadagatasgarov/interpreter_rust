@@ -21,7 +21,6 @@ pub fn start(stdin: Stdin, mut stdout: Stdout) {
                 break;
             }
             writeln!(stdout, "{token:?}").expect("Token should haven been written");
-            
         }
     }
 }
