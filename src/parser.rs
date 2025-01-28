@@ -91,7 +91,7 @@ mod test {
                     let_stmt.name.value
                 );
             }
-            // other => panic!("stmt is not LetStatement, got={:?}", other),
+            //other => panic!("stmt is not LetStatement, got={:?}", other),
         }
     }
 
