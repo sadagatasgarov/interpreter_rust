@@ -1,9 +1,14 @@
-use crate::{ast::{Identifier, LetStatement, Program, StatementNode}, lexer::Lexer, token::{Token, TokenKind}};
+use crate::{
+    ast::{Identifier, LetStatement, Program, StatementNode},
+    lexer::Lexer,
+    token::{Token, TokenKind},
+};
 
 struct Parser {
     lexer: Lexer,
     cur_token: Token,
     peek_token: Token,
+    errors: Vec<String>,
 }
 
 impl Parser {
@@ -12,9 +17,9 @@ impl Parser {
             lexer,
             cur_token: Default::default(),
             peek_token: Default::default(),
+            errors: vec![],
         };
 
-        parser.next_token();
         parser.next_token();
 
         parser
@@ -26,9 +31,7 @@ impl Parser {
     }
 
     pub fn parse_program(&mut self) -> Option<Program> {
-        let mut program = Program {
-            statements: vec![]
-        };
+        let mut program = Program { statements: vec![] };
 
         while self.cur_token.kind != TokenKind::Eof {
             if let Some(statement) = self.parse_statement() {
@@ -47,19 +50,19 @@ impl Parser {
         }
     }
 
-    fn parse_let_statement(&mut self) -> Option<StatementNode>{
-        let mut stmt = LetStatement{
+    fn parse_let_statement(&mut self) -> Option<StatementNode> {
+        let mut stmt = LetStatement {
             token: self.cur_token.clone(),
             name: Default::default(),
-            value: Default::default()
+            value: Default::default(),
         };
 
-        return if !self.expect_peek(TokenKind::Ident){
+        return if !self.expect_peek(TokenKind::Ident) {
             None
-        }else{
+        } else {
             stmt.name = Identifier {
                 token: self.cur_token.clone(),
-                value: self.cur_token.literal.clone()
+                value: self.cur_token.literal.clone(),
             };
             if !self.expect_peek(TokenKind::Assign) {
                 None
@@ -71,17 +74,16 @@ impl Parser {
 
                 Some(StatementNode::Let(stmt))
             }
-           
         };
     }
 
-    fn expect_peek(&mut self, token_kind: TokenKind) -> bool{
-        if self.peek_token_is(token_kind) {
+    fn expect_peek(&mut self, token_kind: TokenKind) -> bool {
+        if self.peek_token_is(token_kind.clone()) {
             self.next_token();
             return true;
-        } else {
-            false
         }
+        self.peek_error(token_kind);
+        false
     }
 
     fn peek_token_is(&self, token_kind: TokenKind) -> bool {
@@ -92,19 +94,36 @@ impl Parser {
         self.cur_token.kind == token_kind
     }
 
+    fn errors(&self) -> &Vec<String> {
+        &self.errors
+    }
+
+    fn peek_error(&mut self, token_kind: TokenKind) {
+        let msg = format!(
+            "expected next token to be {}, got {} intead",
+            token_kind, self.peek_token.kind
+        );
+
+        self.errors.push(msg);
+    }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::{ast::{Node, StatementNode}, lexer::Lexer};
+    use core::error;
+
+    use crate::{
+        ast::{Node, StatementNode},
+        lexer::Lexer,
+    };
 
     use super::Parser;
 
     #[test]
     fn test_let_statements() {
         let input = r#"
-        let x = 5;
-        let y = 10;
+        let x= 5;
+        let y= 10;
         let foobar = 838383;
 
         "#;
@@ -112,6 +131,7 @@ mod test {
         let lexer = Lexer::new(input);
         let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
+        check_parser_errors(parser);
 
         match program {
             Some(program) => {
@@ -134,10 +154,14 @@ mod test {
         }
     }
 
-
     fn test_let_statement(stmt: &StatementNode, expected: &str) {
         // if stmt.token_literal() !=  {}
-        assert_eq!(stmt.token_literal(), "let", "token literal not 'let' got {}", stmt.token_literal());
+        assert_eq!(
+            stmt.token_literal(),
+            "let",
+            "token literal not 'let' got = {}",
+            stmt.token_literal()
+        );
 
         match stmt {
             StatementNode::Let(let_stmt) => {
@@ -154,9 +178,21 @@ mod test {
                     expected,
                     let_stmt.name.value
                 );
-            }
-            //other => panic!("stmt is not LetStatement, got={:?}", other),
+            } //other => panic!("stmt is not LetStatement, got={:?}", other),
         }
     }
 
+    fn check_parser_errors(parser: Parser) {
+        let errors = parser.errors();
+
+        if errors.len() == 0 {
+            return;
+        }
+
+        for error in errors {
+            eprintln!("parser error: {}", error)
+        }
+
+        panic!("parser error present");
+    }
 }
