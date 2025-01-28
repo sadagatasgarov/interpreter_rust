@@ -25,7 +25,7 @@ impl Node for StatementNode {
 }
 
 #[derive(Debug)]
-enum ExpressionNode {
+pub enum ExpressionNode {
     IdentifierNode(Identifier),
 }
 
@@ -99,7 +99,7 @@ impl Node for LetStatement {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Identifier {
     pub token: Token,
     pub value: String,
