@@ -1,6 +1,9 @@
 use std::io::{Stdin, Stdout, Write};
 
-use crate::{lexer::{self, Lexer}, token::TokenKind};
+use crate::{
+    lexer::{self, Lexer},
+    token::TokenKind,
+};
 
 pub fn start(stdin: Stdin, mut stdout: Stdout) {
     loop {

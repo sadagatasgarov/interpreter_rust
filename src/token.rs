@@ -1,13 +1,14 @@
 use std::fmt::Display;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Default, Clone)]
 pub struct Token {
     pub kind: TokenKind,
     pub literal: String,
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Default, Clone)]
 pub enum TokenKind {
+    #[default]
     Illegal,
     Eof,
 
@@ -41,8 +42,7 @@ pub enum TokenKind {
     Else,
     Return,
     True,
-    False
-
+    False,
 }
 
 impl Display for TokenKind {
@@ -71,15 +71,13 @@ impl Display for TokenKind {
             TokenKind::If => write!(f, "If"),
             TokenKind::Else => write!(f, "Else"),
             TokenKind::Return => write!(f, "Return"),
-            TokenKind::True =>write!(f, "True"),
-            TokenKind::False =>write!(f, "False"),
+            TokenKind::True => write!(f, "True"),
+            TokenKind::False => write!(f, "False"),
             TokenKind::Eq => write!(f, "=="),
             TokenKind::NotEq => write!(f, "!="),
         }
     }
 }
-
-
 
 pub fn lookup_ident(identifier: &String) -> TokenKind {
     match identifier.as_str() {
@@ -90,6 +88,6 @@ pub fn lookup_ident(identifier: &String) -> TokenKind {
         "return" => TokenKind::Return,
         "true" => TokenKind::True,
         "false" => TokenKind::False,
-        _ => TokenKind::Ident 
+        _ => TokenKind::Ident,
     }
 }

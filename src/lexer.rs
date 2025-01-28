@@ -38,9 +38,9 @@ impl Lexer {
             '=' => {
                 if self.peek_char() == '=' {
                     self.read_char();
-                    Token{
+                    Token {
                         kind: TokenKind::Eq,
-                        literal: String::from("==")
+                        literal: String::from("=="),
                     }
                 } else {
                     Lexer::new_token(TokenKind::Assign, self.ch)
@@ -61,12 +61,12 @@ impl Lexer {
             '!' => {
                 if self.peek_char() == '=' {
                     self.read_char();
-                    Token{
+                    Token {
                         kind: TokenKind::NotEq,
-                        literal: String::from("!=")
+                        literal: String::from("!="),
                     }
                 } else {
-                Lexer::new_token(TokenKind::Bang, self.ch)
+                    Lexer::new_token(TokenKind::Bang, self.ch)
                 }
             }
 
@@ -95,8 +95,6 @@ impl Lexer {
         return token;
     }
 
-
-
     fn skip_whitespace(&mut self) {
         while self.ch.is_ascii_whitespace() {
             self.read_char();
@@ -108,7 +106,7 @@ impl Lexer {
             '\0'
         } else {
             self.input[self.read_position]
-        }
+        };
     }
 
     fn new_token(kind: TokenKind, ch: char) -> Token {
@@ -132,8 +130,6 @@ impl Lexer {
 
         identifier
     }
-
-
 
     fn is_digit(ch: char) -> bool {
         ch.is_numeric()
@@ -449,15 +445,15 @@ mod test {
                 kind: TokenKind::Rbrace,
                 literal: "}".to_string(),
             },
-//
+            //
             Token {
                 kind: TokenKind::Int,
                 literal: "10".to_string(),
-            },            
+            },
             Token {
                 kind: TokenKind::Eq,
                 literal: "==".to_string(),
-            },    
+            },
             Token {
                 kind: TokenKind::Int,
                 literal: "10".to_string(),
@@ -466,15 +462,14 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-
             Token {
                 kind: TokenKind::Int,
                 literal: "10".to_string(),
-            },            
+            },
             Token {
                 kind: TokenKind::NotEq,
                 literal: "!=".to_string(),
-            },            
+            },
             Token {
                 kind: TokenKind::Int,
                 literal: "9".to_string(),
@@ -483,7 +478,6 @@ mod test {
                 kind: TokenKind::Semicolon,
                 literal: ";".to_string(),
             },
-
             //
             Token {
                 kind: TokenKind::Eof,
