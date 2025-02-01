@@ -1,5 +1,5 @@
 use crate::{
-    ast::{Identifier, LetStatement, Program, StatementNode},
+    ast::{Identifier, LetStatement, Program, ReturnStatement, StatementNode},
     lexer::Lexer,
     token::{Token, TokenKind},
 };
@@ -21,6 +21,7 @@ impl Parser {
         };
 
         parser.next_token();
+        
 
         parser
     }
@@ -46,6 +47,7 @@ impl Parser {
     fn parse_statement(&mut self) -> Option<StatementNode> {
         match self.cur_token.kind {
             TokenKind::Let => self.parse_let_statement(),
+            TokenKind::Return => self.parse_return_statement(),
             _ => None,
         }
     }
@@ -75,6 +77,19 @@ impl Parser {
                 Some(StatementNode::Let(stmt))
             }
         };
+    }
+
+    fn parse_return_statement(&mut self) -> Option<StatementNode> {
+        let stmt = ReturnStatement {
+            token: self.cur_token.clone(),
+            ret_value: Default::default(),
+        };
+        self.next_token();
+
+        while !self.cur_token_is(TokenKind::Semicolon) {
+            self.next_token();
+        }
+        Some(StatementNode::Return(stmt))
     }
 
     fn expect_peek(&mut self, token_kind: TokenKind) -> bool {
@@ -154,6 +169,48 @@ mod test {
         }
     }
 
+    #[test]
+    fn test_return_statements() {
+        let input = r#"
+            return 5;
+            return 10;
+            return 993322;
+        "#;
+
+        let lexer = Lexer::new(input);
+        let mut parser = Parser::new(lexer);
+        let program = parser.parse_program();
+        check_parser_errors(parser);
+
+        match program {
+            Some(program) => {
+                assert_eq!(
+                    program.statements.len(),
+                    3,
+                    "statements does not contain 3 statements, got{}",
+                    program.statements.len()
+                );
+
+                for stmt in program.statements {
+                    match stmt {
+                        StatementNode::Return(ret_stmt) => {
+                            assert_eq!(
+                                ret_stmt.token_literal(),
+                                "return",
+                                "token literal not return, got={:?}",
+                                ret_stmt.token_literal()
+                            );
+                        }
+                        other => panic!("not a Return Statement got {:?}", other),
+                    }
+                }
+            }
+            None => {
+                panic!("Parse program should not be none");
+            }
+        }
+    }
+
     fn test_let_statement(stmt: &StatementNode, expected: &str) {
         // if stmt.token_literal() !=  {}
         assert_eq!(
@@ -178,7 +235,8 @@ mod test {
                     expected,
                     let_stmt.name.value
                 );
-            } //other => panic!("stmt is not LetStatement, got={:?}", other),
+            }
+            other => panic!("not a Let Statement got {:?}", other),
         }
     }
 
