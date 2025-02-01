@@ -8,18 +8,21 @@ pub trait Node {
 #[derive(Debug)]
 pub enum StatementNode {
     Let(LetStatement),
+    Return(ReturnStatement)
 }
 
 impl Node for StatementNode {
     fn token_literal(&self) -> String {
         return match self {
             Self::Let(let_stmt) => let_stmt.token_literal(),
+            Self::Return(ret_stmt) => ret_stmt.token_literal()
         };
     }
 
     fn print_string(&self) -> String {
         return match self {
             Self::Let(let_stmt) => let_stmt.print_string(),
+            Self::Return(ret_stmt) => ret_stmt.token_literal()
         };
     }
 }
@@ -52,6 +55,7 @@ impl Node for Program {
         return if self.statements.len() > 0 {
             match &self.statements[0] {
                 StatementNode::Let(let_stmt) => let_stmt.token_literal(),
+                StatementNode::Return(ret_stmt) => ret_stmt.token_literal(),
             }
         } else {
             String::from("value")
@@ -68,6 +72,23 @@ impl Node for Program {
         out
     }
 }
+
+#[derive(Debug, Default)]
+pub struct Identifier {
+    pub token: Token,
+    pub value: String,
+}
+
+impl Node for Identifier {
+    fn token_literal(&self) -> String {
+        self.token.literal.clone()
+    }
+
+    fn print_string(&self) -> String {
+        self.value.clone()
+    }
+}
+
 
 #[derive(Debug)]
 pub struct LetStatement {
@@ -92,25 +113,26 @@ impl Node for LetStatement {
         if let Some(value) = &self.value {
             out.push_str(value.print_string().as_str());
         }
-
         out.push_str(";");
 
         out
     }
 }
 
-#[derive(Debug, Default)]
-pub struct Identifier {
+
+
+#[derive(Debug)]
+pub struct ReturnStatement {
     pub token: Token,
-    pub value: String,
+    pub ret_value: Option<ExpressionNode>,
 }
 
-impl Node for Identifier {
+impl Node for ReturnStatement {
     fn token_literal(&self) -> String {
-        self.token.literal.clone()
+        self.token_literal().clone()
     }
 
     fn print_string(&self) -> String {
-        self.value.clone()
+        todo!()
     }
 }
