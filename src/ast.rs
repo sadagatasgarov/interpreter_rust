@@ -178,8 +178,7 @@ mod test {
     #[test]
     fn test_print_string() {
         let program = Program {
-            statements: vec![
-                StatementNode::Let(LetStatement {
+            statements: vec![StatementNode::Let(LetStatement {
                 token: Token {
                     kind: TokenKind::Let,
                     literal: String::from("let"),
