@@ -9,7 +9,7 @@ pub trait Node {
 pub enum StatementNode {
     Let(LetStatement),
     Return(ReturnStatement),
-    Expression(ExpressionStatement)
+    Expression(ExpressionStatement),
 }
 
 impl Node for StatementNode {
@@ -25,7 +25,7 @@ impl Node for StatementNode {
         return match self {
             Self::Let(let_stmt) => let_stmt.print_string(),
             Self::Return(ret_stmt) => ret_stmt.print_string(),
-            Self::Expression(expression) => expression.print_string()
+            Self::Expression(expression) => expression.print_string(),
         };
     }
 }
@@ -138,7 +138,7 @@ impl Node for ReturnStatement {
 
         out.push_str(self.token_literal().as_str());
         out.push_str(" ");
-        
+
         if let Some(ret_value) = &self.ret_value {
             out.push_str(ret_value.print_string().as_str());
         }
@@ -153,7 +153,6 @@ pub struct ExpressionStatement {
     pub expression: Option<ExpressionNode>,
 }
 
-
 impl Node for ExpressionStatement {
     fn token_literal(&self) -> String {
         self.token.literal.clone()
@@ -164,5 +163,50 @@ impl Node for ExpressionStatement {
             return expression.print_string();
         }
         String::from("")
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::{
+        ast::Node,
+        token::{Token, TokenKind},
+    };
+
+    use super::{ExpressionNode, Identifier, LetStatement, Program, StatementNode};
+
+    #[test]
+    fn test_print_string() {
+        let program = Program {
+            statements: vec![
+                StatementNode::Let(LetStatement {
+                token: Token {
+                    kind: TokenKind::Let,
+                    literal: String::from("let"),
+                },
+
+                name: Identifier {
+                    token: Token {
+                        kind: TokenKind::Ident,
+                        literal: String::from("myVar"),
+                    },
+                    value: String::from("myVar"),
+                },
+                value: Some(ExpressionNode::IdentifierNode(Identifier {
+                    token: Token {
+                        kind: TokenKind::Ident,
+                        literal: String::from("anotherVar"),
+                    },
+                    value: String::from("anotherVar"),
+                })),
+            })],
+        };
+
+        assert_eq!(
+            program.print_string(),
+            String::from("let myVar = anotherVar;"),
+            "print string wrong. got = {}",
+            program.print_string()
+        )
     }
 }

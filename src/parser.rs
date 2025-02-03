@@ -21,7 +21,6 @@ impl Parser {
         };
 
         parser.next_token();
-        
 
         parser
     }
