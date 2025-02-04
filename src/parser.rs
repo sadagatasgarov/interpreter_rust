@@ -130,32 +130,23 @@ impl Parser {
         self.errors.push(msg);
     }
 
-    fn register_prefix(&mut self, token_kind: TokenKind, prefix_fn: PrefixParseFn)  {
+    fn register_prefix(&mut self, token_kind: TokenKind, prefix_fn: PrefixParseFn) {
         self.prefix_parse_fns.insert(token_kind, prefix_fn);
     }
 
-
-
-    fn register_infix(&mut self, token_kind: TokenKind, infix_fn: InfixParseFn)  {
+    fn register_infix(&mut self, token_kind: TokenKind, infix_fn: InfixParseFn) {
         self.infix_parse_fns.insert(token_kind, infix_fn);
     }
-
-
 }
 
-
-
-
-
-
-
+//
 
 #[cfg(test)]
 mod test {
     use core::error;
 
     use crate::{
-        ast::{Node, StatementNode},
+        ast::{ExpressionNode, Node, StatementNode},
         lexer::Lexer,
     };
 
@@ -235,6 +226,49 @@ mod test {
             None => {
                 panic!("Parse program should not be none");
             }
+        }
+    }
+
+    #[test]
+    fn test_identifier_expressions() {
+        let input = "foobar;";
+
+        let lexer = Lexer::new(input);
+        let mut parser = Parser::new(lexer);
+
+        let program = parser.parse_program().unwrap();
+
+        assert_eq!(
+            program.statements.len(),
+            1,
+            "statements does not contain statements. got = {}",
+            program.statements.len()
+        );
+
+        match &program.statements[0] {
+            StatementNode::Expression(exp_stmt) => {
+                assert!(exp_stmt.expression.is_some());
+                match exp_stmt.expression.as_ref().unwrap() {
+                    ExpressionNode::IdentifierNode(identifier) => {
+                        assert_eq!(
+                            identifier.value, "foobar",
+                            "identifir vlue nor 'foobar' got = {}",
+                            identifier.value
+                        );
+                        assert_eq!(
+                            identifier.token_literal(),
+                            "foobar",
+                            "identifier.token_literal() i not 'foobar', gor = {}",
+                            identifier.token_literal()
+                        )
+                    }
+                    other => panic!("expression not identifier, got = {:?}", other),
+                }
+            }
+            other => panic!(
+                "program.statements[o] is not ExpressionStatement got = {:?}",
+                other
+            ),
         }
     }
 
