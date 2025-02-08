@@ -31,6 +31,7 @@ enum PredenceLevel {
     Call = 6,
 }
 
+
 impl Parser {
     pub fn new(lexer: Lexer) -> Parser {
         let mut parser = Parser {
