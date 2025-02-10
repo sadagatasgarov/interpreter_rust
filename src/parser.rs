@@ -31,7 +31,6 @@ enum PredenceLevel {
     Call = 6,
 }
 
-
 impl Parser {
     pub fn new(lexer: Lexer) -> Parser {
         let mut parser = Parser {
@@ -51,12 +50,10 @@ impl Parser {
         parser
     }
 
-    
-
     fn parse_identifier(&mut self) -> Option<ExpressionNode> {
         Some(ExpressionNode::IdentifierNode(Identifier {
             token: self.cur_token.clone(),
-            value: self.cur_token.literal.clone()
+            value: self.cur_token.literal.clone(),
         }))
     }
 
@@ -313,6 +310,9 @@ mod test {
                             identifier.token_literal()
                         )
                     }
+                    // ExpressionNode::Integer(int) => {
+
+                    // }
                     other => panic!("expression not identifier, got = {:?}", other),
                 }
             }
@@ -321,6 +321,26 @@ mod test {
                 other
             ),
         }
+    }
+
+    #[test]
+    fn test_integer_literal_expression() {
+        let input = "5";
+
+        let lexer = Lexer::new(input);
+        let mut parser = Parser::new(lexer);
+
+        let program = parser.parse_program().unwrap();
+        check_parser_errors(parser);
+
+        assert_eq!(
+            program.statements.len(),
+            1,
+            "program.statements does not contain enough statements, got={}",
+            program.statements.len()
+        );
+
+        ////burada qalmidam 06.52
     }
 
     fn test_let_statement(stmt: &StatementNode, expected: &str) {
