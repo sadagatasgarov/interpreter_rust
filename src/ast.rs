@@ -33,18 +33,21 @@ impl Node for StatementNode {
 #[derive(Debug)]
 pub enum ExpressionNode {
     IdentifierNode(Identifier),
+    Integer(IntegerLiteral)
 }
 
 impl Node for ExpressionNode {
     fn token_literal(&self) -> String {
         return match self {
             Self::IdentifierNode(ident) => ident.token_literal(),
+            Self::Integer(int) => int.token_literal()
         };
     }
 
     fn print_string(&self) -> String {
         return match self {
             Self::IdentifierNode(ident) => ident.print_string(),
+            Self::Integer(int) => int.print_string()
         };
     }
 }
@@ -165,6 +168,25 @@ impl Node for ExpressionStatement {
         String::from("")
     }
 }
+
+
+#[derive(Debug)]
+pub struct IntegerLiteral {
+    pub token: Token,
+    pub value: i64,
+}
+
+
+impl Node for IntegerLiteral {
+    fn token_literal(&self) -> String {
+        self.token.literal.clone()
+    }
+
+    fn print_string(&self) -> String {
+        self.token_literal()
+    }
+}
+
 
 #[cfg(test)]
 mod test {

@@ -51,6 +51,8 @@ impl Parser {
         parser
     }
 
+    
+
     fn parse_identifier(&mut self) -> Option<ExpressionNode> {
         Some(ExpressionNode::IdentifierNode(Identifier {
             token: self.cur_token.clone(),
