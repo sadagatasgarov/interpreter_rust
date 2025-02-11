@@ -340,6 +340,32 @@ mod test {
             program.statements.len()
         );
 
+        match &program.statements[0] {
+            StatementNode::Expression(exp_stmt) => {
+                assert!(exp_stmt.expression.is_some());
+                let exp = exp_stmt.expression.as_ref().unwrap();
+                match exp {
+                    ExpressionNode::Integer(integer) => {
+                        assert_eq!(
+                            integer.value, 5,
+                            "integet.value not '5'. got = {}",
+                            integer.value
+                        );
+                        assert_eq!(
+                            integer.token_literal(),
+                            "5",
+                            "integet.value not '5'. got = {}",
+                            integer.token_literal()
+                        )
+                    }
+                    other => panic!("Expression not an IntegerLiteral, got = {:?}", other),
+                }
+            }
+            other => panic!(
+                "program.statements[0] is not ExpressionStatement. got ={:?}",
+                other
+            ),
+        }
         ////burada qalmidam 06.52
     }
 
