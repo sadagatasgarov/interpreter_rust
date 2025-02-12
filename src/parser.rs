@@ -2,8 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     ast::{
-        ExpressionNode, ExpressionStatement, Identifier, LetStatement, Program, ReturnStatement,
-        StatementNode,
+        ExpressionNode, ExpressionStatement, Identifier, IntegerLiteral, LetStatement, Program, ReturnStatement, StatementNode
     },
     lexer::Lexer,
     token::{Token, TokenKind},
@@ -43,6 +42,7 @@ impl Parser {
         };
 
         parser.register_prefix(TokenKind::Ident, Self::parse_identifier);
+        parser.register_prefix(TokenKind::Int, Self::parse_integer_literal);
 
         parser.next_token();
         parser.next_token();
@@ -55,6 +55,26 @@ impl Parser {
             token: self.cur_token.clone(),
             value: self.cur_token.literal.clone(),
         }))
+    }
+
+    fn parse_integer_literal(&mut self) -> Option<ExpressionNode> {
+        let mut literal = IntegerLiteral{
+            token: self.cur_token.clone(),
+            value: Default::default()
+        };
+
+        return match self.cur_token.literal.parse::<i64>() {
+            Ok(value) => {
+                literal.value = value;
+                Some(ExpressionNode::Integer(literal))
+            }
+            Err(_) => {
+                let msg = format!("could not parse {} as integer", self.cur_token.literal);
+                self.errors.push(msg);
+                None
+            },
+        };
+
     }
 
     fn next_token(&mut self) {
