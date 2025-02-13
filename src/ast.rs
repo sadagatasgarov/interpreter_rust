@@ -34,6 +34,8 @@ impl Node for StatementNode {
 pub enum ExpressionNode {
     IdentifierNode(Identifier),
     Integer(IntegerLiteral),
+    Prefic(PrefixExpression)
+
 }
 
 impl Node for ExpressionNode {
@@ -182,6 +184,29 @@ impl Node for IntegerLiteral {
 
     fn print_string(&self) -> String {
         self.token_literal()
+    }
+}
+
+#[derive(Debug)]
+pub struct PrefixExpression {
+    pub token: Token,
+    pub operator: String,
+    pub right: Box<ExpressionNode>
+}
+
+impl Node for PrefixExpression {
+    fn token_literal(&self) -> String {
+        self.token_literal().clone()
+    }
+
+    fn print_string(&self) -> String {
+        let mut out = String::from("");
+        out.push_str("(");
+        out.push_str(self.operator.as_str());
+        out.push_str(self.right.print_string().as_str());
+        out.push_str(")");
+
+        out
     }
 }
 
